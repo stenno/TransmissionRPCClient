@@ -1,0 +1,6 @@
+*.swo
+*.swp
+bin
+vendor/gems/gems
+vendor/gems/dirs
+vendor
