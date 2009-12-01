@@ -1,0 +1,123 @@
+<h1>TransmissionRPCClient</h1>
+
+<p>TransmissionRPCClient (hereafter TRPCC) is a Client written in Ruby for comfortably controlling the Transmission Remote Interface via RPC.
+The TRPCC comes with a small set of methods, which will be explained in this document.</p>
+
+<h2>Initialization</h2>
+
+<p>Before you can use the TRPCC, you need to <em>require</em> the file.</p>
+
+<blockquote>
+  <p><code>require 'trpcc'</code></p>
+</blockquote>
+
+<p>You can initialize TRPCC with:</p>
+
+<blockquote>
+  <p><code>TransmissionRPCClient.new</code></p>
+</blockquote>
+
+<p>The constructor takes two arguments <em>host</em> and <em>port</em>, which are <strong>localhost</strong> and <strong>9091</strong> by default.</p>
+
+<h2>Doing stuff</h2>
+
+<ul>
+<li><p>Getting a list of all the torrents:</p>
+
+<blockquote>
+<pre><code>  list_torrents
+</code></pre>
+</blockquote>
+
+<p>This method returns an array, with the entries being hashes with the keys <em>id</em>, <em>name</em>, and <em>percentDone</em>.</p></li>
+<li><p>Getting information about a specific torrent:</p>
+
+<blockquote>
+<pre><code>  get_info(id)
+</code></pre>
+</blockquote>
+
+<p>This returns a hash with the keys <em>id</em>, <em>name</em>,  <em>percentDone</em>, and <em>files</em>. 
+<em>files</em> itself is an array, with the entries being hashes with the keys <em>key</em>, <em>bytesCompleted</em>, <em>length</em> and <em>name</em>.</p></li>
+<li><p>Starting a torrent which is paused:</p>
+
+<blockquote>
+<pre><code>  start_torrent(id)
+</code></pre>
+</blockquote></li>
+<li><p>Adding a torrent with a local <em>.torrent</em>-file:</p>
+
+<blockquote>
+<pre><code>  add_torrent(id)
+</code></pre>
+</blockquote></li>
+<li><p>Adding a torrent via an IO object:</p>
+
+<blockquote>
+<pre><code>  add_metainfo(io_object)
+</code></pre>
+</blockquote>
+
+<p>This requires an IO Object which responds to the <em>read</em> method. base64 encoding is done by the client</p></li>
+</ul>
+
+<h2>Going a little bit deeper</h2>
+
+<p>If you want to manipulate the arguments without hacking the source code, you might want to use <em>do_action</em></p>
+
+<blockquote>
+<pre><code>  do_action(userHash)
+</code></pre>
+</blockquote>
+
+<p>with <em>userHash</em> being a hash with the keys <em>method</em> and <em>arguments</em>, of which <em>method</em> being one of</p>
+
+<blockquote>
+<pre><code>  add     start   stop    set     get     delete
+</code></pre>
+</blockquote>
+
+<p>and <em>arguments</em> being itself a hash with the corresponding arguments for the RPC method.</p>
+
+<p>If you want to refresh your <em>X-Transmission-Session-id</em>, call</p>
+
+<blockquote>
+<pre><code>  get_sid
+</code></pre>
+</blockquote>
+
+<p>This method is also called during initialization.</p>
+
+<h2>Examples</h2>
+
+<p>This will simply display all the torrents</p>
+
+<blockquote>
+<pre><code>  require 'trpcc'
+  client = TransmissionRPCClient.new
+  puts client.list_torrents
+</code></pre>
+</blockquote>
+
+<p>This example adds a torrent from a file via an IO object</p>
+
+<blockquote>
+<pre><code>  require 'trpcc'
+  client = TransmissionRPCClient.new
+  myTorrent = File.open("example.torrent")
+  client.add_metainfo myTorrent
+</code></pre>
+</blockquote>
+
+<p>This will set the peer limit for the torrent with the id <em>0</em> to 23</p>
+
+<blockquote>
+<pre><code>  require 'trpcc'
+  client = TransmissionRPCClient.new
+  client.do_action {"method" =&gt; "set", "arguments" =&gt; {"ids" =&gt; [0], "peer-limit" =&gt; 23}}
+</code></pre>
+</blockquote>
+
+<h2>Further information</h2>
+
+<p>Especially for <em>do_action</em>, you may want to read <a href="http://trac.transmissionbt.com/browser/trunk/doc/rpc-spec.txt">the specs</a> of the RPC of Transmission.</p>
