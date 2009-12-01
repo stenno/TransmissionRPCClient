@@ -29,7 +29,7 @@ The constructor takes two arguments *host* and *port*, which are **localhost** a
 >		start_torrent(id)
 
 *	Adding a torrent with a local *.torrent*-file:
->		add_torrent(id)
+>		add_torrent(filename)
 
 *	Adding a torrent via an IO object:
 >		add_metainfo(io_object)
