@@ -15,22 +15,15 @@ class TransmissionRPCClient
 	def do_action userHash
 	 actionHash = {}
 	 if not ["add","start","stop","set","get","delete"].include? userHash["method"] 
-	   puts "Could not find method #{userHash[:method]}"
 	   return false
 	 end	 
 	 case userHash["method"]
 	 when "add"
 	   if not (userHash["arguments"].has_key?("filename") or userHash["arguments"].has_key?("metainfo"))
-	     puts "Could not find metainfo oder filename argument"
 	     return false
 	   end
-	 when "start","stop","set"
-	   if not userHash["arguments"].has_key?("ids")
-	     puts "No ids found, assume all!"
-     end
    when "get"
      if not userHash["arguments"].has_key?("fields")
-       puts "No fields array found"
        return false
      end
    end
@@ -39,8 +32,6 @@ class TransmissionRPCClient
 
    resp = JSON.parse(RestClient.post(@host + ":" + @port + @root_path, actionHash.to_json, "X-Transmission-Session-Id" => @sid, "content-type" => "application/json"))
    if not resp["result"] == "success"
-     puts "request failed"
-     puts resp["result"]
      return false
    end
    return resp
